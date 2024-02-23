@@ -1,7 +1,7 @@
 # BOLD-CSF coupling
 
 ## The theory
-The BOLD-CSF coupling method was proposed by Fultz and colleagues (2019). The coupling monitors a cerebral blood volume-driven CSF inflow at the fourth ventricle, linked to fluctuations of neuronal activity. An anti-correlation is observed between cortical grey matter activity (BOLD signal) and CSF waves, in awake participants, but even stronger during sleep. The coupling between the two signals is explained by the following mechanism: activity fluctuations in the cortex give rise to cerebral blood volume changes, which in turn push CSF out, or allow for CSF inflow, due to the restricted space inside the skull. The BOLD-CSF coupling method has been applied in healthy people during sleep (Fultz et al., 2019), Alzheimer’s Disease during wake (Han et al., 2021) and Cerebral Amyloid Angiopathy during wake (Hirschler et al., in prep).
+The BOLD-CSF coupling method was proposed by [Fultz and colleagues (2019)](https://www.science.org/doi/full/10.1126/science.aax5440). The coupling monitors a cerebral blood volume-driven CSF inflow at the fourth ventricle, linked to fluctuations of neuronal activity. An anti-correlation is observed between cortical grey matter activity (BOLD signal) and CSF waves, in awake participants, but even stronger during sleep. The coupling between the two signals is explained by the following mechanism: activity fluctuations in the cortex give rise to cerebral blood volume changes, which in turn push CSF out, or allow for CSF inflow, due to the restricted space inside the skull. The BOLD-CSF coupling method has been applied in healthy people during sleep (Fultz et al., 2019), Alzheimer’s Disease during wake (Han et al., 2021) and Cerebral Amyloid Angiopathy during wake (Hirschler et al., in prep).
 
 ## Overview of general workflow
 To retrieve the BOLD-CSF coupling, separate processing of the BOLD and CSF signal is required:
@@ -25,32 +25,42 @@ We recommend the use of standardised software pipelines for the image processing
   
 ## Retrieving the BOLD signal
 ### HALFpipe
-We used HALFpipe to pre-process the fMRI signal and perform a slice-time and motion correction. HALFpipe can be accessed as a container through Docker/Apptainer on a server. The apptainer command to open the HALFpipe GUI our slurm server looked like this:
+We used [HALFpipe](https://github.com/HALFpipe/HALFpipe) to pre-process the fMRI signal and perform a slice-time and motion correction. HALFpipe can be accessed as a container through Docker/Apptainer on a server. The apptainer command to open the HALFpipe GUI our slurm server looked like this:
 ```
 apptainer run /path/to/container/halfpipe-latest.sif --keep none --verbose
 ```
 
 A GUI will open that allows you to specify settings for preprocessing. You can type as usual, but only use ‘delete’ (not ‘backspace’) to remove text. Use ‘enter’ to confirm an option and the spacebar to select or deselect options in a multiple-choice menu. Go back to the previous question using ctrl + ‘C’. We used the following preprocessing settings:
 ```
-Specify working directory: /path/to/workdir/
+Specify working directory:
+/path/to/workdir/
+
 Is the data available in BIDS format?
 yes
-Specify data directory: /path/to/bidsdir/
+
+Specify data directory:
+/path/to/bidsdir/
 ```
 The GUI now prints how many T1w and BOLD images have been found in that data directory. Confirm the numbers or go back to your data.
 ```
 Do slice timing?
 yes
+
 Missing slice acquisition direction values. Specify slice acquisition direction
 Inferior to superior
+
 Check slice timing values. Proceed with these values?
 yes
+
 Remove initial volumes from scans? 
 [0]
+
 Specify first-level features? 
 No
+
 Output a preprocessed image?
 Yes
+
 Specify image name. 
 [preproc]
 ```
@@ -58,12 +68,16 @@ This name will be used to save your output files, if you choose to run different
 ```
 Apply smoothing? 
 No
+
 Do grand mean scaling? 
 No
+
 Apply a temporal filter? 
 No
+
 Remove confounds? 
-Motion parameters (only) 
+Motion parameters (only)
+
 Output another preprocessed image? 
 No
 ```
@@ -115,7 +129,7 @@ fslmeants -i {sub_func_preprocessed}.nii.gz -m {sub_GM_mask_MNI_resampled_nonzer
 All previously described steps to retrieve the BOLD signal (except for running HALFpipe) are performed by the [get_BOLD_timeseries.sh script](https://github.com/evavanheese/BOLD-CSF/blob/main/get_BOLD_timeseries_feb24.sh)
 
 ## Retrieving the CSF signal
-The aim of this step is to draw an ROI on a location that shows sufficient CSF signal. In case of an existing dataset: depending on how consistently the field-of-view is planned during fMRI acquisition, this could vary little to greatly between participants. Preferably, the CSF ROI is NOT placed in a larger area, i.e. where CSF moves more isotropically (for example in the middle of the fourth ventricle) but rather at the bottom or top of the fourth ventricle or in the cerebral aqueduct/central canal. It is imperical that the ROI is drawn at the bottom slice (see inflow effect explained in Fultz et al. 2019, supplementary material) and that the image is not processsed. 
+The aim of this step is to draw an ROI on a location that shows sufficient CSF signal. In case of an existing dataset: depending on how consistently the field-of-view is planned during fMRI acquisition, this could vary little to greatly between participants. Preferably, the CSF ROI is NOT placed in a larger area, i.e. where CSF moves more isotropically (for example in the middle of the fourth ventricle) but rather at the bottom or top of the fourth ventricle or in the cerebral aqueduct/central canal. It is imperative that the ROI is drawn at the bottom slice (see inflow effect explained in Fultz et al. 2019, [supplementary material](https://www.science.org/doi/full/10.1126/science.aax5440#supplementary-materials)) and that the image is not processsed. 
 
 When drawing the regions of interest:
 - Select the bottom slice on the functional image, keep an anatomical scan for reference.
@@ -130,10 +144,11 @@ fslmeants -i {sub_func_raw}.nii.gz -m {sub_CSF_manual_mask}.nii.gz -o [sub_outpu
 
 ## Signal processing and cross-correlation
 We used Matlab functions for:
-- signal normalisation
-- detrending of the signal (using `spline_detrend` from chronux)
-- low-pass filtering (<0.1 Hz)
-- cross-correlation
+- Signal normalisation
+- Detrending of the signal (using `spline_detrend` from chronux)
+- Low-pass filtering (<0.1 Hz)
+- Cross-correlation
+
 Scripts to perform these steps and make BOLD-CSF output figures with the same layout and formatting as published in the original paper are available upon request.
 
 ## Recommended checks to perform along the way
