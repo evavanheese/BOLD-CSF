@@ -126,12 +126,12 @@ We extracted the CSF signal using fslmeants (which outputs a .txt file of the ti
 fslmeants -i {sub_func_raw}.nii.gz -m {sub_CSF_manual_mask}.nii.gz -o [sub_output_CSF_timeseries].txt
 ```
 
-## Signal processing
+## Signal processing and cross-correlation
 We used Matlab functions for:
 - signal normalisation
 - detrending of the signal (using `spline_detrend` from chronux)
 - low-pass filtering (<0.1 Hz)
-
+- cross-correlation
 Scripts to perform these steps and make BOLD-CSF output figures with the same layout and formatting as published in the original paper are available upon request.
 
 ## Recommended checks to perform along the way
