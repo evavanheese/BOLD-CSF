@@ -105,9 +105,42 @@ fslmaths {sub_GM_mask_MNI_resampled}.nii.gz -mul {sub_func_preprocessed}.nii.gz 
 fslmaths {sub_GM_mask_MNI_resampled_nonzero}.nii.gz -thr 0.5 -bin {sub_GM_mask_MNI_resampled_nonzero_bin}.nii.gz
 ```
 
+We extracted the BOLD signal using fslmeants (which outputs a .txt file of the timeseries):
+```
+fslmeants -i {sub_func_preprocessed}.nii.gz -m {sub_GM_mask_MNI_resampled_nonzero_bin}.nii.gz -o [sub_output_BOLD_timeseries].txt
+```
+
+All previously described steps to retrieve the BOLD signal (except for running HALFpipe) are performed by the get_BOLD_timeseries.sh script. 
+
 ## Retrieving the CSF signal
+The aim of this step is to draw an ROI on a location that shows sufficient CSF signal. In case of an existing dataset: depending on how consistently the field-of-view is planned during fMRI acquisition, this could vary little to greatly between participants. Preferably, the CSF ROI is NOT placed in a larger area, i.e. where CSF moves more isotropically (for example in the middle of the fourth ventricle) but rather at the bottom or top of the fourth ventricle or in the cerebral aqueduct/central canal. It is imperical that the ROI is drawn at the bottom slice (see inflow effect explained in Fultz et al. 2019, supplementary material) and that the image is not processsed. 
+
+When drawing the regions of interest:
+- Select the bottom slice on the functional image, keep an anatomical scan for reference.
+- Scroll through the volumes (i.e. time) and look at the CSF signal in the transverse view.
+- Select at least 3 voxels that are generally included in the CSF area, preferably more.
+- In case of much motion, select a somewhat larger area to make sure there is always CSF included in the mask over time.
+
+We extracted the CSF signal using fslmeants (which outputs a .txt file of the timeseries):
+```
+fslmeants -i {sub_func_raw}.nii.gz -m {sub_CSF_manual_mask}.nii.gz -o [sub_output_CSF_timeseries].txt
+```
 
 ## Signal processing
+We used Matlab functions for:
+- signal normalisation
+- detrending of the signal (using `spline_detrend` from chronux)
+- low-pass filtering (<0.1 Hz)
+
+Scripts to perform these steps and make BOLD-CSF output figures with the same layout and formatting as published in the original paper are available upon request.
+
+## Recommended checks to perform along the way
+- Open T1w images and grey matter masks to confirm accurate segmentation by FreeSurfer (remove mask voxels close to or inside CSF)
+- Open T1w and functional images to confirm accurate registration to MNI space
+- Plot raw / normalised / detrended / low-pass filtered signal to confirm these processing steps worked well
+- Plot TF plots to confirm filtering
+- Plot both processed signals and see whether they show any kind of coupling
+- Plot cross-correlation (lags over x axis) for some subjects to assess lag (does it make sense)
 
 ## Sources
 Han, F., Chen, J., Belkin-Rosen, A., Gu, Y., Luo, L., Buxton, O. M., Liu, X., & the Alzheimer’s Disease Neuroimaging Initiative. (2021). Reduced coupling between cerebrospinal fluid flow and global brain activity is linked to Alzheimer disease–related pathology. PLoS Biology, 19(6), e3001233. https://doi.org/10.1371/journal.pbio.3001233
