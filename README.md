@@ -18,6 +18,8 @@ CSF signal
 
 Both signals are normalised, detrended, and low-pass filtered. The cross-correlation is calculated by taking the peak closest to 0. Calculate the BOLD-CSF correlation and dBOLD-CSF correlation amplitude and lag for statistical analysis.
 
+![BOLD-CSF_methods_flowchart](https://github.com/evavanheese/BOLD-CSF/assets/82935174/66465b47-5b9f-4e4b-97b8-77f38e4b384e)
+
 ## Required software and dependencies
 We recommend the use of standardised software pipelines for the image processing steps. In this study, T1w images were processed with FreeSurfer to segment the cortex. The fMRI data were processed using HALFpipe (Waller et al., 2022). Registration was done with ANTs. 
   
