@@ -109,10 +109,10 @@ fslmaths {sub_GM_mask_MNI_resampled_nonzero}.nii.gz -thr 0.5 -bin {sub_GM_mask_M
 
 We extracted the BOLD signal using fslmeants (which outputs a .txt file of the timeseries):
 ```
-fslmeants -i {sub_func_preprocessed}.nii.gz -m {sub_GM_mask_MNI_resampled_nonzero_bin}.nii.gz -o [sub_output_BOLD_timeseries].txt
+fslmeants -i {sub_func_preprocessed}.nii.gz -m {sub_GM_mask_MNI_resampled_nonzero_bin}.nii.gz -o [sub_output_BOLD_timeseries].txt 
 ```
 
-All previously described steps to retrieve the BOLD signal (except for running HALFpipe) are performed by the get_BOLD_timeseries.sh script. 
+All previously described steps to retrieve the BOLD signal (except for running HALFpipe) are performed by the [get_BOLD_timeseries.sh script](https://github.com/evavanheese/BOLD-CSF/blob/main/get_BOLD_timeseries_feb24.sh)
 
 ## Retrieving the CSF signal
 The aim of this step is to draw an ROI on a location that shows sufficient CSF signal. In case of an existing dataset: depending on how consistently the field-of-view is planned during fMRI acquisition, this could vary little to greatly between participants. Preferably, the CSF ROI is NOT placed in a larger area, i.e. where CSF moves more isotropically (for example in the middle of the fourth ventricle) but rather at the bottom or top of the fourth ventricle or in the cerebral aqueduct/central canal. It is imperical that the ROI is drawn at the bottom slice (see inflow effect explained in Fultz et al. 2019, supplementary material) and that the image is not processsed. 
